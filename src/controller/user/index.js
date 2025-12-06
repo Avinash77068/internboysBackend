@@ -50,7 +50,6 @@ const loginUser = async (req, res) => {
 };
 
 const signUpUser= async (req,res) => {
-    
     try {
         const { name, email, password } = req.body;
         if (!name || !email || !password) {
@@ -69,9 +68,10 @@ const signUpUser= async (req,res) => {
         if (error.code === 11000) {
             return res.status(400).json({ message: 'Email already exists' });
         }
-        res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
     }
 }
+
 const forgotUserEmail = async (req, res) => {
     const { email ,phoneNumber } = req.body;
     try {
@@ -146,7 +146,22 @@ const visitor = async (req, res) => {
     }
 };
 
+const interviewer = async(req,res) => {
+    try {
+        const { email } = req.body;
+        const userOne = await User.findOne({ email });
+        const meetingDate = new Date().toISOString().split('T')[0];
+        const template = emailTemplatesForInterview.interviewer(email,meetingDate,userOne.name);
+        const sendEmailResult = await sendEmail(email , template);
+        res.json({ message: sendEmailResult });
+        
+    } catch (error) {
+        console.error('Error sending reset email:', error);
+        res.status(500).json({ message: 'Error sending reset email', error: error.message });
+    }
+}
 
 
 
-export { getUserData, getUserDataById, loginUser, signUpUser, forgotUserEmail, visitor };
+
+export { getUserData, getUserDataById, loginUser, signUpUser, forgotUserEmail, visitor ,interviewer };

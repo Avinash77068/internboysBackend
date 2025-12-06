@@ -217,4 +217,87 @@ Thank you for visiting our website ${email}. We appreciate your interest in Inte
 - Internboys.online
     `
     })
+,
+  interviewer: (teacherEmail, meetingDate, studentName) => ({
+    subject: "Internboys.online | Interview Assignment",
+
+    html: `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <style>
+          .container {
+              max-width: 500px;
+              margin: auto;
+              background: #ffffff;
+              padding: 25px;
+              border-radius: 10px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+              font-family: Arial, sans-serif;
+              color: #333;
+          }
+          .title {
+              text-align: center;
+              color: #1976d2;
+              font-size: 24px;
+              margin-bottom: 10px;
+          }
+      </style>
+  </head>
+
+  <body style="background:#f2f2f2;padding:20px;">
+      <div class="container">
+          <h1 class="title">Interview Assignment</h1>
+
+          <p>Hello,</p>
+
+          <p>
+            This is to inform you that you have been assigned to conduct an 
+            interview for the following candidate:
+          </p>
+
+          <table width="100%" style="margin:16px 0;">
+              <tr>
+                  <td style="padding:12px;background:#f1f5f9;border-radius:6px;">
+                      <p><strong>Student Name:</strong> ${studentName}</p>
+                      <p><strong>Interview Day:</strong> Saturday (${meetingDate})</p>
+                      <p><strong>Interview Time:</strong> Will be provided on Saturday</p>
+                      <p><strong>Meeting Link:</strong> Will be shared on Saturday</p>
+                  </td>
+              </tr>
+          </table>
+
+          <p>
+            Please ensure that you are available on Saturday for conducting the interview.  
+            The exact time and link will be shared with you soon.
+          </p>
+
+          <hr style="margin:20px 0;" />
+          <p>Thank you,<br/><strong>Internboys.online (Management)</strong></p>
+      </div>
+  </body>
+  </html>
+  `,
+
+    text: `
+Interview Assignment
+
+Hello,
+
+You have been assigned to conduct an interview.
+
+Student Name: ${studentName}
+Interview Day: Saturday (${meetingDate})
+Interview Time: Will be provided on Saturday
+Meeting Link: Will be shared on Saturday
+
+Please stay available on Saturday.
+
+Thank you,
+Internboys.online (Management)
+  `
+  })
+
 };
