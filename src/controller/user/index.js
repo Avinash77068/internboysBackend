@@ -161,7 +161,36 @@ const interviewer = async(req,res) => {
     }
 }
 
+const handleApplication = async (req, res) => {
+    try {
+        const { fullName, email, phone, college, major, year, experience, motivation, skills } = req.body;
+        // Uploaded file info
+        const resume = req.file ? req.file.filename : null;
+
+        const newApplication = {
+            fullName,
+            email,
+            phone,
+            college,
+            major,
+            year,
+            experience,
+            motivation,
+            skills: skills ? JSON.parse(skills) : [],
+            resume,
+            submittedAt: new Date(),
+        };
+
+        console.log("New Application:", newApplication);
+
+        res.json({ message: "Application submitted successfully", data: newApplication });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+};
 
 
 
-export { getUserData, getUserDataById, loginUser, signUpUser, forgotUserEmail, visitor ,interviewer };
+
+export { getUserData, getUserDataById, loginUser, signUpUser, forgotUserEmail, visitor ,interviewer, handleApplication };
