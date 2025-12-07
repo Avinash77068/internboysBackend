@@ -1,8 +1,8 @@
-import User from "../../model/user/index.js";
-import generateToken from '../../middleware/token.js'
-import sendEmail from "../../middleware/email/sendEmail.js";
-import { emailTemplatesForInterview } from "../../middleware/email/templates.js";
-import Visitor from "../../model/visitor/index.js";
+const User = require("../../model/user/index.js");
+const generateToken = require('../../middleware/token.js')
+const sendEmail = require("../../middleware/email/sendEmail.js");
+const { emailTemplatesForInterview } = require("../../middleware/email/templates.js");
+const Visitor = require("../../model/visitor/index.js");
 
 const getUserData = async (_req, res) => {
     try {
@@ -167,6 +167,26 @@ const handleApplication = async (req, res) => {
         // Uploaded file info
         const resume = req.file ? req.file.filename : null;
 
+        // Handle skills - accept both string and array
+        let parsedSkills = [];
+        if (skills) {
+            if (Array.isArray(skills)) {
+                parsedSkills = skills;
+            } else if (typeof skills === 'string') {
+                try {
+                    // Try to parse as JSON first
+                    parsedSkills = JSON.parse(skills);
+                    if (!Array.isArray(parsedSkills)) {
+                        // If not a JSON array, split by comma
+                        parsedSkills = skills.split(',').map(s => s.trim());
+                    }
+                } catch (e) {
+                    // If JSON parse fails, split by comma
+                    parsedSkills = skills.split(',').map(s => s.trim());
+                }
+            }
+        }
+
         const newApplication = {
             fullName,
             email,
@@ -176,7 +196,7 @@ const handleApplication = async (req, res) => {
             year,
             experience,
             motivation,
-            skills: skills ? JSON.parse(skills) : [],
+            skills: parsedSkills,  // Use the parsed skills
             resume,
             submittedAt: new Date(),
         };
@@ -193,4 +213,4 @@ const handleApplication = async (req, res) => {
 
 
 
-export { getUserData, getUserDataById, loginUser, signUpUser, forgotUserEmail, visitor ,interviewer, handleApplication };
+module.exports = { getUserData, getUserDataById, loginUser, signUpUser, forgotUserEmail, visitor ,interviewer, handleApplication };

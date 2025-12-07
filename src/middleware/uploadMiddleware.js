@@ -1,33 +1,44 @@
-import multer from "multer";
-import path from "path";
-import fs from "fs";
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 // Configure storage for multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadDir = "./uploads/resumes";
+        const uploadDir = path.join(process.cwd(), "uploads");
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        const baseName = path.basename(file.originalname, ext).replace(/\s+/g, "_");
-        cb(null, `${Date.now()}-${baseName}${ext}`);
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(
+            null,
+            file.fieldname +
+            "-" +
+            uniqueSuffix +
+            path.extname(file.originalname)
+        );
     },
 });
 
-// Create multer upload middleware
 const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // max 5MB
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+    },
     fileFilter: (req, file, cb) => {
-        const allowedTypes = /pdf|doc|docx/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        if (extname) return cb(null, true);
-        cb(new Error("Only .pdf, .doc, and .docx files are allowed"));
+        if (file.mimetype === "application/pdf") {
+            cb(null, true);
+        } else {
+            cb(new Error("Only PDF files are allowed"), false);
+        }
     },
 });
 
-export const handleUpload = upload.single("resume");
+// Export the upload middleware with both single and any methods
+module.exports = {
+    handleUpload: upload.single("resume"),
+    upload
+};

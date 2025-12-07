@@ -1,76 +1,92 @@
 // backend/utils/email/templates.js
 
-export const emailTemplatesForInterview = {
+ const emailTemplatesForInterview = {
+  // -----------------------------
+  // Future: Meeting Request Email
+  // -----------------------------
+  meetingRequest: (fullName, email) => ({
+    subject: "Internboys.online | Internship Confirmation Required",
 
-    meetingSchedule: (meetingDate, meetingTime) => ({
-        subject: "Internboys.online | Internship Selection & Meeting Schedule",
+    html: `
+  <!doctype html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+    </head>
+    <body style="margin:0;padding:0;background-color:#eef2f7;font-family:Arial,Helvetica,sans-serif;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:40px auto;background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,0.08)">
+        
+        <!-- Header -->
+        <tr>
+          <td style="padding:24px;text-align:center;background:linear-gradient(90deg,#2563eb,#4f46e5);color:#ffffff;">
+            <h1 style="margin:0;font-size:22px;">Internboys.online</h1>
+            <p style="margin:5px 0 0;font-size:14px;">Internship Confirmation Notice</p>
+          </td>
+        </tr>
 
-        html: `
-    <!doctype html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-      </head>
-      <body style="margin:0;padding:0;background-color:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:40px auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.08)">
-          <tr>
-            <td style="padding:24px;text-align:center;background:linear-gradient(90deg,#1e88e5,#5c6bc0);color:#ffffff;">
-              <h1 style="margin:0;font-size:20px;">Internboys.online</h1>
-              <p style="margin:6px 0 0 0;font-size:14px;opacity:0.95;">Internship Selection & Meeting Schedule</p>
-            </td>
-          </tr>
+        <!-- Content -->
+        <tr>
+          <td style="padding:24px;">
+            <p style="font-size:16px;">Hello <strong>${fullName || "Candidate"}</strong>,</p>
+            
+            <p>We are pleased to inform you that you have been <strong>shortlisted for an internship</strong> at <strong>Internboys.online</strong> 👏</p>
 
-          <tr>
-            <td style="padding:24px;">
-              <h2>Hello,</h2>
-              <p>Congratulations! 🎉 You have been selected for the internship at <strong>Internboys.online</strong>.</p>
-              <p>Your meeting has been scheduled. See the details below:</p>
+            <p>Before we schedule your interview/meeting, we need one quick confirmation from you.</p>
 
-              <table width="100%" style="margin:16px 0;">
-                <tr>
-                  <td style="padding:8px;background:#f1f5f9;border-radius:6px;">
-                    <p><strong>Meeting Date:</strong> ${meetingDate}</p>
-                    <p><strong>Time:</strong> ${meetingTime}</p>
-                    <p><strong>Platform:</strong> Google Meet / Zoom</p>
-                  </td>
-                </tr>
-              </table>
+            <table width="100%" style="margin:18px 0;">
+              <tr>
+                <td style="padding:14px;background:#f8fafc;border-radius:8px;font-size:15px;">
+                  <p><strong>Registered Email:</strong> ${email}</p>
+                </td>
+              </tr>
+            </table>
 
-              <p>The meeting will cover your role and internship process. Please join on time.</p>
+            <p style="margin-top:20px;font-size:15px;">👉 <strong>Please reply to this email with:</strong></p>
 
-              <hr style="margin:20px 0;" />
-              <p>Thank you,<br/><strong>Team Internboys.online</strong></p>
-            </td>
-          </tr>
+            <ul style="font-size:15px;line-height:1.6">
+              <li>✔ "Yes, I confirm my interest"</li>
+              <li>✔ Preferred meeting time (Morning/Afternoon/Evening)</li>
+              <li>✔ Your WhatsApp number (optional)</li>
+            </ul>
 
-          <tr>
-            <td style="padding:14px;background:#f9fafb;text-align:center;font-size:12px;color:#9ca3af;">
-              © ${new Date().getFullYear()} Internboys.online — All rights reserved.
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-    `,
+            <p style="margin-top:20px;font-size:15px;">Once we receive your reply, we will schedule your meeting and share the Google Meet/Zoom link.</p>
 
-        text: `
-Hello,
+            <hr style="margin:26px 0;" />
 
-Congratulations! You have been selected for the internship at Internboys.online.
+            <p>Thank you,<br/><strong>Team Internboys.online</strong></p>
+          </td>
+        </tr>
 
-Meeting Date: ${meetingDate}
-Time: ${meetingTime}
-Platform: Google Meet / Zoom
+        <!-- Footer -->
+        <tr>
+          <td style="padding:14px;background:#f1f5f9;text-align:center;font-size:12px;color:#6b7280;">
+            © ${new Date().getFullYear()} Internboys.online — All Rights Reserved.
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>
+  `,
 
-The meeting will cover your role and internship process.
+    text: `
+Hello ${fullName},
+
+Congratulations! You have been shortlisted for an internship at Internboys.online.
+
+Before we schedule the meeting, please reply to this email with:
+- "Yes, I confirm my interest"
+- Your preferred meeting time (Morning/Afternoon/Evening)
+- WhatsApp number (optional)
+
+Once we receive your reply, we will schedule the meeting and share the Google Meet/Zoom link.
+
+Registered Email: ${email}
 
 Thank you,
 Team Internboys.online
-    `
-    }),
-
-
+  `
+  }),
     // -----------------------------
     // FUTURE: Forgot Password Email
     // -----------------------------
@@ -153,8 +169,7 @@ If you didn’t request this reset, you can ignore this email.
 
 - Internboys.online
     `
-    })
-,
+    }),
     // -----------------------------
     // Future: Visitor Email
     // -----------------------------
@@ -216,9 +231,11 @@ Thank you for visiting our website ${email}. We appreciate your interest in Inte
 
 - Internboys.online
     `
-    })
-,
-  interviewer: (teacherEmail, meetingDate, studentName) => ({
+    }),
+    // -----------------------------
+    // Future: Interviewer Email
+    // -----------------------------
+    interviewer: (teacherEmail, meetingDate, studentName) => ({
     subject: "Internboys.online | Interview Assignment",
 
     html: `
@@ -301,3 +318,5 @@ Internboys.online (Management)
   })
 
 };
+
+module.exports = emailTemplatesForInterview;

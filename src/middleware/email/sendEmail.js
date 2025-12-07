@@ -1,6 +1,6 @@
 // backend/utils/email/sendEmail.js
 
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 
 const sendEmail = async (toEmail, template) => {
     // Input validation
@@ -64,4 +64,4 @@ const sendEmail = async (toEmail, template) => {
     }
 };
 
-export default sendEmail;
+module.exports = sendEmail;

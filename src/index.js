@@ -1,7 +1,7 @@
-import express from 'express';
-import userRouter from './routes/user/index.js'
-import cors from 'cors'
-import connectDB from './database/db.js';
+const express = require('express');
+const userRouter = require('./routes/user/index.js')
+const cors = require('cors')
+const connectDB = require('./database/db.js');
 connectDB();
 // Middleware
 const app = express();
