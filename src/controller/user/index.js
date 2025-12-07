@@ -34,7 +34,7 @@ const loginUser = async (req, res) => {
    if (!user) {
        return res.status(400).json({ message: 'User not found' });
    }
-   if (user.password !== password) {
+   if (user.password !== password.toString()) {
        return res.status(400).json({ message: 'Invalid password' });
    }
    else {
