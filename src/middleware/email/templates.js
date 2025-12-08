@@ -315,8 +315,66 @@ Please stay available on Saturday.
 Thank you,
 Internboys.online (Management)
   `
-  })
+   }),
+   application: (application) => {
+     const skillsList = Array.isArray(application.skills)
+       ? application.skills.map(skill => `<li>${skill}</li>`).join('')
+       : `<li>${application.skills || 'Not specified'}</li>`;
+
+     return {
+       subject: `Application Received - ${application.fullName}`,
+       html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Application Received - InternBoys</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px; border: 1px solid #e9ecef;">
+            <div style="text-align: center; margin-bottom: 25px;">
+              <h1 style="color: #2563eb; margin: 0;">InternBoys</h1>
+              <p style="color: #6b7280; margin-top: 5px;">Internship Program</p>
+            </div>
+
+            <div style="background-color: white; padding: 25px; border-radius: 6px; margin-bottom: 25px;">
+              <h2 style="color: #1f2937; margin-top: 0;">Application Received!</h2>
+              
+              <p>Hello <strong>${application.fullName}</strong>,</p>
+              
+              <p>Thank you for applying to the InternBoys Internship Program. We've received your application and will review it carefully.</p>
+              
+              <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">
+                <h3 style="margin-top: 0; color: #2563eb;">Application Details</h3>
+                <p><strong>Email:</strong> ${application.email}</p>
+                <p><strong>Phone:</strong> ${application.phone || 'Not provided'}</p>
+                <p><strong>College:</strong> ${application.college || 'Not provided'}</p>
+                <p><strong>Major:</strong> ${application.major || 'Not specified'}</p>
+                <p><strong>Year:</strong> ${application.year || 'Not specified'}</p>
+                <p><strong>Skills:</strong></p>
+                <ul style="margin-top: 5px; padding-left: 20px;">
+                  ${skillsList}
+                </ul>
+                ${application.resume ? `<p><strong>Resume:</strong> Attached</p>` : ''}
+              </div>
+
+              <p>Our team will review your application and get back to you within 5-7 business days. If your profile matches our requirements, we'll contact you for the next steps.</p>
+              
+              <p>In the meantime, feel free to explore our website to learn more about our programs and offerings.</p>
+            </div>
+
+            <div style="text-align: center; color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+              <p>This is an automated email, please do not reply to this message.</p>
+              <p>&copy; ${new Date().getFullYear()} InternBoys. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+     };
+   }
 
 };
 
-module.exports = emailTemplatesForInterview;
+module.exports = {emailTemplatesForInterview};

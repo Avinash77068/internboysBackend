@@ -92,6 +92,7 @@ const forgotUserEmail = async (req, res) => {
     }
 };
 
+
 const visitor = async (req, res) => {
     try {
         const { email } = req.body;
@@ -100,49 +101,66 @@ const visitor = async (req, res) => {
             return res.status(400).json({ message: "Email is required" });
         }
 
-        // check if visitor already exists
+        // Check if visitor exists
         let visitor = await Visitor.findOne({ email });
 
+        // Get the email template
         const template = emailTemplatesForInterview.visitor(email);
 
         if (!visitor) {
-            // NEW USER
-            visitor = new Visitor({ email, attemptCount: 1 });
+            // Create new visitor
+            visitor = new Visitor({
+                email,
+                attemptCount: 1,
+                lastAttempt: new Date()
+            });
             await visitor.save();
 
+            // Send welcome email
             await sendEmail(email, template);
 
             return res.status(201).json({
+                success: true,
                 message: "Visitor created successfully (1/3 attempts)",
-                visitor,
+                attempts: 1,
                 statusCode: 201
             });
         }
 
-        // EXISTING USER -> check attempts
+        // Check if visitor has exceeded attempt limit
         if (visitor.attemptCount >= 3) {
             return res.status(429).json({
+                success: false,
                 message: "Maximum attempts reached. Try again later.",
-                attemptsUsed: visitor.attemptCount,
+                attempts: visitor.attemptCount,
                 statusCode: 429
             });
         }
 
-        // ALLOWED: increase count + send email
+        // Increment attempt count and update last attempt time
         visitor.attemptCount += 1;
+        visitor.lastAttempt = new Date();
         await visitor.save();
 
+        // Send email
         await sendEmail(email, template);
 
         return res.status(200).json({
+            success: true,
             message: `Email sent successfully (${visitor.attemptCount}/3 attempts)`,
-            visitor,
+            attempts: visitor.attemptCount,
             statusCode: 200
         });
 
     } catch (error) {
         console.error("Visitor Error:", error);
-        return res.status(500).json({ message: error.message, statusCode: 500 });
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while processing your request",
+            error: error.message,
+            statusCode: 500,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 };
 
@@ -174,14 +192,11 @@ const handleApplication = async (req, res) => {
                 parsedSkills = skills;
             } else if (typeof skills === 'string') {
                 try {
-                    // Try to parse as JSON first
                     parsedSkills = JSON.parse(skills);
                     if (!Array.isArray(parsedSkills)) {
-                        // If not a JSON array, split by comma
                         parsedSkills = skills.split(',').map(s => s.trim());
                     }
                 } catch (e) {
-                    // If JSON parse fails, split by comma
                     parsedSkills = skills.split(',').map(s => s.trim());
                 }
             }
@@ -196,17 +211,42 @@ const handleApplication = async (req, res) => {
             year,
             experience,
             motivation,
-            skills: parsedSkills,  // Use the parsed skills
+            skills: parsedSkills,
             resume,
             submittedAt: new Date(),
         };
 
-        console.log("New Application:", newApplication);
+        // Get the email template
+        const template = emailTemplatesForInterview.application(newApplication);
 
-        res.json({ message: "Application submitted successfully", data: newApplication });
+        // Send email
+        try {
+            await sendEmail(email, template);
+
+
+            await User.create(newApplication);
+
+            res.json({
+                success: true,
+                message: "Application submitted successfully",
+                data: newApplication
+            });
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            // Still return success but notify about email failure
+            res.status(200).json({
+                success: true,
+                message: "Application submitted, but confirmation email could not be sent",
+                data: newApplication
+            });
+        }
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error", error: err.message });
+        console.error('Application submission error:', err);
+        res.status(500).json({
+            success: false,
+            message: "Server error while processing your application",
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
     }
 };
 
